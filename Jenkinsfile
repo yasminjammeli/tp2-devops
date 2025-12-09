@@ -23,15 +23,13 @@ pipeline {
             when { changeset "server/**" }
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'gitlab_ssh',    // À modifier selon ton ID Jenkins
+                    credentialsId: 'dockerhub',    // À modifier selon ton ID Jenkins
                     usernameVariable: 'DH_USER',
                     passwordVariable: 'DH_PASS'
                 )]) {     
                     sh '''
                         echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
                         docker build -t $IMAGE_SERVER:${BUILD_NUMBER} server
-                        # Scanner l'image immédiatement après le push
-                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image $IMAGE_SERVER:${BUILD_NUMBER} 
                         docker push $IMAGE_SERVER:${BUILD_NUMBER}
                     '''
                 }
@@ -50,10 +48,17 @@ pipeline {
                         echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
                         docker build -t $IMAGE_CLIENT:${BUILD_NUMBER} client
                         docker push $IMAGE_CLIENT:${BUILD_NUMBER}
-                        # Scanner l'image immédiatement après le push
-                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image $IMAGE_CLIENT:${BUILD_NUMBER} 
+                        
                     '''
                 }
+            }
+        }
+        stage('Scan with Trivy') {
+            steps {
+                sh '''
+                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                aquasec/trivy image $IMAGE_SERVER:${BUILD_NUMBER} > trivy_report.txt
+                '''
             }
         }
     }
