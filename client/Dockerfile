@@ -1,24 +1,26 @@
-# Étape 1 : Construire l'application React
-FROM node:lts-alpine AS build
+# Utiliser l'image de base Node.js LTS Alpine
+FROM node:lts-alpine
 
+# Définir le répertoire de travail
 WORKDIR /app
+
+# Copier les fichiers package*.json
 COPY package*.json ./
+
+# Installer les dépendances
 RUN npm install
+
+# Copier le reste des fichiers du client
 COPY . .
+
+# Construire l'application React
 RUN npm run build
 
-# Étape 2 : Servir les fichiers avec un serveur léger
-FROM node:lts-alpine
-WORKDIR /app
-
-# Installer "serve" pour héberger les fichiers React
+# Installer serve pour servir les fichiers statiques
 RUN npm install -g serve
-
-# Copier les fichiers de build depuis l'étape précédente
-COPY --from=build /app/build ./build
 
 # Exposer le port 3000
 EXPOSE 3000
 
-# Lancer le serveur
+# Démarrer le serveur pour servir les fichiers de build
 CMD ["serve", "-s", "build", "-l", "3000"]

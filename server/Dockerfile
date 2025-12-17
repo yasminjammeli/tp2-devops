@@ -1,23 +1,20 @@
-#utiliser une image Node légére 
+# Utiliser l'image de base Node.js LTS Alpine
 FROM node:lts-alpine
 
-#définir le répertoire de travail dans le container
+# Définir le répertoire de travail
 WORKDIR /app
 
-#copier les fichiers package.json et package-lock.json dans le répertoire de travail
+# Copier les fichiers package*.json
 COPY package*.json ./
 
-#installer les dépendances
+# Installer les dépendances
 RUN npm install
 
-#copier le reste des fichiers de l'application dans le répertoire de travail
+# Copier le reste des fichiers du serveur
 COPY . .
 
-#exposer le port 9000
+# Exposer le port 9000
 EXPOSE 9000
 
-# definir la variable d'environnement pour MongoDB
-ENV MONGODB_URI=mongodb://mongo:27017/mern_db
-
-#demarrer l'application
+# Démarrer l'application
 CMD ["npm", "start"]
