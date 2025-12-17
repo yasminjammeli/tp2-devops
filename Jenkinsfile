@@ -6,8 +6,8 @@ pipeline {
     }
     
     environment {
-        IMAGE_SERVER = 'youruser/mern-server' // TODO: Changez avec votre username Docker Hub
-        IMAGE_CLIENT = 'youruser/mern-client' // TODO: Changez avec votre username Docker Hub
+        IMAGE_SERVER = 'yasmin952/mern-server' // TODO: Changez avec votre username Docker Hub
+        IMAGE_CLIENT = 'yasmin952/mern-client' // TODO: Changez avec votre username Docker Hub
     }
     
     stages {
